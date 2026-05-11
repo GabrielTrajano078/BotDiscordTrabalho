@@ -12,4 +12,5 @@ config :nostrum,
   ]
 
 config :meu_bot,
-  store_path: Path.expand("../priv/reminders.json", __DIR__)
+  store_path: Path.expand("../priv/reminders.json", __DIR__),
+  agenda_path: Path.expand("../priv/agenda.json", __DIR__)

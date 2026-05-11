@@ -1,7 +1,7 @@
 
 # MeuBot (Discord + Elixir + Nostrum)
 
-Bot para a disciplina de Programação Funcional (T300): sete comandos, Tesla + Jason, OTP (supervisor + GenServer) e persistência em JSON via `MeuBot.Store`.
+Bot para a disciplina de Programação Funcional (T300): comandos com `?`, Tesla + Jason, OTP (supervisor + GenServer), persistência em JSON (`MeuBot.Store`, `MeuBot.AgendaStore`) e comando `!agenda` para o ficheiro da agenda.
 
 ## Pré-requisitos
 
@@ -18,7 +18,7 @@ export DISCORD_BOT_TOKEN="seu_token_aqui"
 
 O `config/config.exs` lê `System.get_env("DISCORD_BOT_TOKEN")` para o Nostrum.
 
-Opcional: caminho do arquivo de lembretes (padrão: `priv/reminders.json` relativo ao projeto, definido em `config/config.exs`).
+Opcional: caminhos em `config/config.exs` — `priv/reminders.json` (anotações `?anotar`) e `priv/agenda.json` (`!agenda`).
 
 ## Executar
 
@@ -32,10 +32,11 @@ Convide o bot ao servidor com os escopos de mensagens adequados e envie os coman
 
 ## Comandos (distribuição do enunciado)
 
-Prefixo **`?`** (não `!`, para não misturar com os exemplos do professor).
+Prefixo **`?`** para a maior parte dos comandos (evita colisão com exemplos do professor com `!`).
 
 | Comando | Tipo | API(s) |
 |--------|------|--------|
+| `!agenda` / `!agenda <texto>` / `!agenda listar` | JSON local | ficheiro `priv/agenda.json` (`MeuBot.AgendaStore`) |
 | `?conselho` | sem parâmetro | ZenQuotes (zenquotes.io) |
 | `?filme <número>` | um parâmetro | swapi.tech (films) |
 | `?pokemon <nome>` | um parâmetro | pokeapi.co |
@@ -49,7 +50,8 @@ Prefixo **`?`** (não `!`, para não misturar com os exemplos do professor).
 - `MeuBot` — aplicação e supervisor
 - `MeuBot.Consumer` — eventos Discord + pattern matching nos comandos
 - `MeuBot.Commands` — uma função pública por comando
-- `MeuBot.Store` — leitura/escrita do JSON
+- `MeuBot.Store` — leitura/escrita do JSON das anotações
+- `MeuBot.AgendaStore` — cria/atualiza `priv/agenda.json` (`items`)
 - `MeuBot.Reminders` — GenServer que mantém a lista e sincroniza com o disco
 
 ## Uso de IA generativa

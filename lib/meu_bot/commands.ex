@@ -3,7 +3,7 @@ defmodule MeuBot.Commands do
   Uma função pública por comando do bot; helpers privados com `|>` e APIs distintas.
   """
 
-  alias MeuBot.Reminders
+  alias MeuBot.{AgendaStore, Reminders}
 
   @doc "Sem parâmetros — citação aleatória (zenquotes.io, JSON)."
   def conselho do
@@ -86,6 +86,39 @@ defmodule MeuBot.Commands do
   def anotacoes do
     lista = Reminders.list() |> Enum.reverse()
     {:ok, "> Suas anotações: #{inspect(lista, charlists: :as_lists)}"}
+  end
+
+  @doc "Cria `priv/agenda.json` com {\"items\": []} se ainda não existir."
+  def agenda_init do
+    case AgendaStore.ensure_file() do
+      {:ok, :created} ->
+        {:ok, "> Criei o ficheiro **priv/agenda.json** com `{\"items\": []}`."}
+
+      {:ok, :already_there} ->
+        {:ok,
+         "> O ficheiro **priv/agenda.json** já existe. " <>
+           "Uso: `!agenda <texto>` para guardar um item, ou `!agenda listar`."}
+    end
+  end
+
+  @doc "Linha após `!agenda `: acrescenta item, ou listar/ lista / ls mostra a lista."
+  def agenda_linha(linha) when is_binary(linha) do
+    t = String.trim(linha)
+
+    cond do
+      t == "" ->
+        agenda_init()
+
+      t in ["listar", "lista", "ls"] ->
+        items = AgendaStore.read_items()
+
+        {:ok,
+         "> Agenda (#{length(items)} itens): #{inspect(Enum.reverse(items), charlists: :as_lists)}"}
+
+      true ->
+        AgendaStore.append_item(t)
+        {:ok, "> Guardado na agenda: «#{t}»"}
+    end
   end
 
   @doc "Encadeia pessoa (swapi.tech) + planeta natal (segundo GET)."

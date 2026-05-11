@@ -73,6 +73,12 @@ defmodule MeuBot.Consumer do
     send_result(ch, MeuBot.Commands.personagem(String.trim(id)))
   end
 
+  defp dispatch("!agenda", ch), do: send_result(ch, MeuBot.Commands.agenda_init())
+
+  defp dispatch("!agenda " <> resto, ch) do
+    send_result(ch, MeuBot.Commands.agenda_linha(resto))
+  end
+
   # Exemplos típicos do enunciado com `!` — lembrar que aqui o prefixo é `?`.
   defp dispatch("!ping" <> _, ch), do: comandos_novos(ch)
   defp dispatch("!cep" <> _, ch), do: comandos_novos(ch)
